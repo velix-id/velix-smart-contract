@@ -4,9 +4,9 @@ import './VelixToken.sol';
 import 'zeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
 
 
-contract GustavoCoinCrowdsale is Crowdsale {
+contract VelixIdTokenCrowdsale is Crowdsale {
 
-  function GustavoCoinCrowdsale(
+  function VelixIdTokenCrowdsale(
   	uint256 _startTime, 
   	uint256 _endTime, 
   	uint256 _rate, 
