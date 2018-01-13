@@ -23,11 +23,11 @@ async function liveDeploy(deployer, accounts)
     const BigNumber = web3.BigNumber;
     const RATE = new BigNumber(1);
     const startTime = latestTime() + duration.weeks(1);
-    const endTime   = startTime() + duration.weeks(1);
+    const endTime   = startTime + duration.weeks(1);
     console.log([startTime, endTime, RATE.toNumber, accounts[0]]);
     //uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet
       return deployer.deploy(VelixIdTokenCrowdsale, startTime, endTime, RATE, accounts[0]).then( async () => {
-          const inst = await VelixIdTokenCrowdsale.deployed();
+          const instance = await VelixIdTokenCrowdsale.deployed();
           const token = await instance.token.call();
           console.log('Token Address', token);
       }) 
