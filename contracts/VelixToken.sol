@@ -1,9 +1,10 @@
-pragma solidity ^0.4.13;
+pragma solidity 0.4.18;
 
-import 'zeppelin-solidity/contracts/token/MintableToken.sol';
+import "zeppelin-solidity/contracts/token/MintableToken.sol";
 
-contract VelixCoin is MintableToken {
-  string public name = "VELIX TOKEN";
-  string public symbol = "VLX";
-  uint256 public decimals = 18;
+
+contract VelixToken is MintableToken {
+    string public name = "VELIX.ID TOKEN";
+    string public symbol = "VXD";
+    uint8 public decimals = 18;
 }
