@@ -1,8 +1,13 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.15;
 
-import './VelixToken.sol';
+import "zeppelin-solidity/contracts/token/MintableToken.sol";
 
-contract ReleasableToken is VelixToken {
+
+contract VelixIdToken is MintableToken {
+
+	string public name = "VELIX.ID TOKEN";
+    string public symbol = "VXD";
+    uint8 public decimals = 18;
 
 	address public releaseAgent;
 	
@@ -11,7 +16,7 @@ contract ReleasableToken is VelixToken {
 	mapping (address => bool) public transferAgents;
 
 	modifier canTransfer(address _sender) {
-	    require(released && transferAgents[_sender]);
+	    require(released || transferAgents[_sender]);
     	_;
 	}
 

@@ -12,7 +12,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -31,7 +30,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -54,7 +52,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -470,5 +467,9 @@
   },
   "networks": {},
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-01-13T13:12:34.879Z"
+  "updatedAt": "2018-01-13T13:12:34.879Z",
+  "contract_name": "ERC20Basic",
+  "unlinked_binary": "0x",
+  "schema_version": "0.0.5",
+  "updated_at": 1516019533579
 }

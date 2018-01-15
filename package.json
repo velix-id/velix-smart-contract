@@ -24,7 +24,6 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
-    "solc": "0.4.15",
     "truffle": "^3.4.9",
     "web3": "^1.0.0-beta.27",
     "zeppelin-solidity": "git://github.com/OpenZeppelin/zeppelin-solidity.git#0ed98ea9b95e0ff0575f759536e02b54b0689707"

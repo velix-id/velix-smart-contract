@@ -21,7 +21,7 @@ const duration = {
 async function liveDeploy(deployer, accounts)
 {
     const BigNumber = web3.BigNumber;
-    const RATE = new BigNumber(1);
+    const RATE = new BigNumber(1000);
     const startTime = latestTime() + duration.weeks(1);
     const endTime   = startTime + duration.weeks(1);
     console.log([startTime, endTime, RATE.toNumber, accounts[0]]);
