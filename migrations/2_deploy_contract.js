@@ -30,6 +30,7 @@ async function liveDeploy(deployer, accounts)
           const instance = await VelixIdTokenCrowdsale.deployed();
           const token = await instance.token.call();
           console.log('Token Address', token);
+          console.log('ABI', JSON.stringify(instance.abi));
       }) 
 }
 
