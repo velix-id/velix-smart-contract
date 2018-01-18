@@ -34,10 +34,9 @@ contract VelixIdTokenCrowdsale {
    * event for token purchase logging
    * @param purchaser who paid for the tokens
    * @param beneficiary who got the tokens
-   * @param value weis paid for purchase
    * @param amount amount of tokens purchased
    */
-  event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
+  event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 amount);
 
 
   function VelixIdTokenCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
@@ -59,29 +58,28 @@ contract VelixIdTokenCrowdsale {
     return new MintableToken();
   }
 
-
   // fallback function can be used to buy tokens
   function () external payable {
-    buyTokens(msg.sender);
+    buyTokens(msg.sender, 0);
   }
 
   // low level token purchase function
-  function buyTokens(address beneficiary) public payable {
+  function buyTokens(address beneficiary, uint256 tokens) public payable {
     require(beneficiary != 0x0);
-    // require(validPeriod());
+    require(validPeriod());
 
-    uint256 weiAmount = msg.value;
+    // uint256 weiAmount = msg.value;
 
     // calculate token amount to be created
-    uint256 tokens = weiAmount.mul(rate);
+    // uint256 tokens = weiAmount.mul(rate);
 
     // update state
-    weiRaised = weiRaised.add(weiAmount);
+    // weiRaised = weiRaised.add(weiAmount);
 
     token.mint(beneficiary, tokens);
-    TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
+    TokenPurchase(msg.sender, beneficiary, tokens);
 
-    forwardFunds();
+    forwardFunds(tokens);
   }
 
   // low level token purchase function
@@ -98,15 +96,15 @@ contract VelixIdTokenCrowdsale {
     // weiRaised = weiRaised.add(weiAmount);
 
     token.mint(beneficiary, tokens);
-    TokenPurchase(msg.sender, beneficiary, 0, tokens);
+    TokenPurchase(msg.sender, beneficiary, tokens);
 
-    forwardFunds();
+    forwardFunds(tokens);
   }
 
-  // send ether to the fund collection wallet
-  // override to create custom fund forwarding mechanisms
-  function forwardFunds() internal {
-    wallet.transfer(msg.value);
+  // @dev send ether to the fund collection wallet, override to create custom fund forwarding mechanisms
+  // @param amount of token transferred
+  function forwardFunds(uint256 amount) internal {
+    wallet.transfer(amount);
   }
 
   // @return ture if transaction is within valid period
