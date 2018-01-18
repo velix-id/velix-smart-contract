@@ -1,7 +1,7 @@
 pragma solidity ^0.4.15;
 
-import './VelixIdToken';
-import 'zeppelin-solidity/contracts/math/SafeMath';
+import './VelixIdToken.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 /**
  * @title Crowdsale
@@ -66,7 +66,7 @@ contract VelixIdTokenCrowdsale {
   }
 
   // low level token purchase function
-  function buyTokens(address beneficiary) payable {
+  function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
     require(validPurchase());
 
