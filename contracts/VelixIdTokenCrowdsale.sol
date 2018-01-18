@@ -68,7 +68,7 @@ contract VelixIdTokenCrowdsale {
   // low level token purchase function
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
-    require(validPurchase());
+    // require(validPeriod());
 
     uint256 weiAmount = msg.value;
 
@@ -87,7 +87,7 @@ contract VelixIdTokenCrowdsale {
   // low level token purchase function
   function allocateTokens(address beneficiary, uint256 tokens) public payable {
     require(beneficiary != address(0));
-    require(validPurchase());
+    require(validNonZeroPurchase());
 
     // uint256 weiAmount = msg.value;
 
@@ -109,11 +109,21 @@ contract VelixIdTokenCrowdsale {
     wallet.transfer(msg.value);
   }
 
+  // @return ture if transaction is within valid period
+  function validPeriod() internal view returns (bool) {
+    bool withinPeriod = now >= startTime && now <= endTime;
+    return withinPeriod;
+  }
+
+  // @return ture if transaction is non zero value
+  function validNonZeroPurchase() internal view returns (bool) {
+    bool nonZeroPurchase = msg.value != 0;
+    return nonZeroPurchase;
+  }
+
   // @return true if the transaction can buy tokens
   function validPurchase() internal view returns (bool) {
-    bool withinPeriod = now >= startTime && now <= endTime;
-    bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod && nonZeroPurchase;
+    return validPeriod() && validNonZeroPurchase();
   }
 
   // @return true if crowdsale event has ended
