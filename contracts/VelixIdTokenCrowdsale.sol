@@ -55,26 +55,26 @@ contract VelixIdTokenCrowdsale {
   // creates the token to be sold.
   // override this method to have crowdsale of a specific mintable token.
   function createTokenContract() internal returns (MintableToken) {
-    return new MintableToken();
+    return new VelixIdToken();
   }
 
   // fallback function can be used to buy tokens
   function () external payable {
-    buyTokens(msg.sender, 0);
+    buyTokens(msg.sender);
   }
 
   // low level token purchase function
-  function buyTokens(address beneficiary, uint256 tokens) public payable {
+  function buyTokens(address beneficiary) public payable {
     require(beneficiary != 0x0);
     require(validPeriod());
 
-    // uint256 weiAmount = msg.value;
+    uint256 weiAmount = msg.value;
 
     // calculate token amount to be created
-    // uint256 tokens = weiAmount.mul(rate);
+    uint256 tokens = weiAmount.mul(rate);
 
     // update state
-    // weiRaised = weiRaised.add(weiAmount);
+    weiRaised = weiRaised.add(weiAmount);
 
     token.mint(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, tokens);
@@ -83,17 +83,17 @@ contract VelixIdTokenCrowdsale {
   }
 
   // low level token purchase function
-  function allocateTokens(address beneficiary, uint256 tokens) public payable {
+  function allocateTokens(address beneficiary) public payable {
     require(beneficiary != address(0));
     require(validNonZeroPurchase());
 
-    // uint256 weiAmount = msg.value;
+    uint256 weiAmount = msg.value;
 
-    // // calculate token amount to be created
-    // uint256 tokens = weiAmount.mul(rate);
+    // calculate token amount to be created
+    uint256 tokens = weiAmount.mul(rate);
 
-    // // update state
-    // weiRaised = weiRaised.add(weiAmount);
+    // update state
+    weiRaised = weiRaised.add(weiAmount);
 
     token.mint(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, tokens);
