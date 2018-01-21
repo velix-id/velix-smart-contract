@@ -7,9 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "parity": "parity --chain kovan --unlock 0x0083C9cC9b43FD90A743311fC239c8B8b3bD0374 --password 0084",
+    "parity": "parity --chain kovan --unlock 0x0083C9cC9b43FD90A743311fC239c8B8b3bD0374 --password 0084 --warp",
     "compile": "truffle compile",
     "develop": "truffle develop",
+    "console": "truffle console",
+    "debug": "truffle debug",
     "migrate": "truffle migrate --reset",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,8 +26,9 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^2.0.2",
-    "truffle": "^3.4.9",
-    "web3": "^1.0.0-beta.27",
+    "ethereum-tx-decoder": "^1.0.2",
+    "truffle": "^4.0.0",
+    "web3": "^1.0.0-beta2",
     "zeppelin-solidity": "git://github.com/OpenZeppelin/zeppelin-solidity.git#0ed98ea9b95e0ff0575f759536e02b54b0689707"
   }
 }
