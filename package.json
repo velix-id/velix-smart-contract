@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "parity": "parity --chain kovan --unlock 0x0083C9cC9b43FD90A743311fC239c8B8b3bD0374 --password 0084 --warp",
+    "parity": "parity --chain kovan --unlock 0x0083C9cC9b43FD90A743311fC239c8B8b3bD0374 --password 0084 --warp --rpc --rpcport 8545 --rpcaddr 0.0.0.0 --rpccorsdomain \"*\"",
+    "parity-deploy": "parity --chain kovan --unlock 0x0083C9cC9b43FD90A743311fC239c8B8b3bD0374 --password 0084 --warp",
     "compile": "truffle compile",
     "develop": "truffle develop",
     "console": "truffle console",

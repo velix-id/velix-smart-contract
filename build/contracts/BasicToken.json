@@ -126,7 +126,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 474,
+          "SourceUnit": 546,
           "absolutePath": "/Users/bsingh/Documents/velix-smart-contract/contracts/SafeMath.sol",
           "file": "./SafeMath.sol",
           "scope": 69,
@@ -184,7 +184,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "SafeMath",
-                  "referencedDeclaration": 473,
+                  "referencedDeclaration": 545,
                   "type": "library SafeMath"
                 },
                 "id": 6,
@@ -415,7 +415,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 716,
+                                      "referencedDeclaration": 877,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -461,7 +461,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "sub",
-                                  "referencedDeclaration": 448,
+                                  "referencedDeclaration": 520,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -507,7 +507,7 @@
                                               "overloadedDeclarations": [
                                                 null
                                               ],
-                                              "referencedDeclaration": 716,
+                                              "referencedDeclaration": 877,
                                               "type": "msg",
                                               "value": "msg"
                                             },
@@ -643,7 +643,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 472,
+                                  "referencedDeclaration": 544,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -786,7 +786,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 716,
+                                  "referencedDeclaration": 877,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -1037,5 +1037,5 @@
   },
   "networks": {},
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-01-21T11:46:18.562Z"
+  "updatedAt": "2018-01-23T14:21:45.780Z"
 }

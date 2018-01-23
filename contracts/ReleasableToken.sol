@@ -24,12 +24,15 @@ contract ReleasableToken is ERC20, Ownable {
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
   mapping (address => bool) public transferAgents;
 
+  event CanTransferChecked(bool canTransfer, address indexed from, bool isTransferAgent, bool isReleased);
+
   /**
    * Limit token transfer until the crowdsale is over.
    *
    */
   modifier canTransfer(address _sender) {
-    require (released || transferAgents[_sender]);
+    CanTransferChecked(released || transferAgents[_sender], _sender, transferAgents[_sender], released);
+    if (released || transferAgents[_sender]) {revert();}
     _;
   }
 
@@ -72,13 +75,17 @@ contract ReleasableToken is ERC20, Ownable {
     _;
   }
 
-  function transfer(address _to, uint _value) canTransfer(msg.sender) public returns (bool success) {
+  function transfer(address _to, uint _value) public returns (bool success) {
     // Call StandardToken.transfer()
+    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
+    if (released || transferAgents[msg.sender]) {revert();}
    return super.transfer(_to, _value);
   }
 
-  function transferFrom(address _from, address _to, uint _value) canTransfer(_from) public returns (bool success) {
+  function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
     // Call StandardToken.transferForm()
+    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
+    if (released || transferAgents[msg.sender]) {revert();}
     return super.transferFrom(_from, _to, _value);
   }
 
