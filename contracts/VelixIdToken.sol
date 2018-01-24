@@ -1,64 +1,99 @@
-pragma solidity ^0.4.15;
+/**
+ * This smart contract is modified 2017 by Velix.ID to assemble code for creation of VelixIDToken with
+ * it's unique characteristics. 
+ *
+ * Licensed under the Apache License, version 2.0
+ */
 
-import "zeppelin-solidity/contracts/token/MintableToken.sol";
+/**
+ * This smart contract code is Copyright 2017 TokenMarket Ltd. For more information see https://tokenmarket.net
+ *
+ * Licensed under the Apache License, version 2.0: https://github.com/TokenMarketNet/ico/blob/master/LICENSE.txt
+ */
+
+pragma solidity ^0.4.18;
+
+import './BurnableToken.sol';
+import "./ReleasableToken.sol";
+import './SafeMath.sol';
 
 
-contract VelixIdToken is MintableToken {
+/**
+ * VelixIDToken
+ *
+ * Capped, burnable, and transfer releaseable ERC20 token 
+ * for Velix.ID
+ *
+ */
+contract VelixIDToken is ReleasableToken, BurnableToken {
+// contract VelixIDToken is ReleasableToken {
 
-	string public name = "VELIX.ID TOKEN";
-    string public symbol = "VXD";
-    uint8 public decimals = 18;
+  using SafeMath for uint256;
 
-	address public releaseAgent;
-	
-	bool public released = false;
+  /** Name and symbol were updated. */
+  event UpdatedTokenInformation(string newName, string newSymbol);
 
-	mapping (address => bool) public transferAgents;
+  string public name;
 
-	modifier canTransfer(address _sender) {
-	    require(released || transferAgents[_sender]);
-    	_;
-	}
+  string public symbol;
 
-	modifier inReleaseState(bool releaseState) {
-    	require(releaseState == released);
-    	_;
-	}
+  uint public decimals;
 
-	modifier onlyReleaseAgent() {
-    	require(msg.sender == releaseAgent);
-    	_;
-	}
+//   mapping(address => uint256) balances;
 
-	function setReleaseAgent(address addr) onlyOwner inReleaseState(false) public {
-	    releaseAgent = addr;
-	}
+  /**
+   * Construct the token.
+   *
+   * @param _name Token name
+   * @param _symbol Token symbol
+   * @param _initialSupply How many tokens we start with
+   * @param _decimals Number of decimal places
+   */
+  function VelixIDToken(string _name, string _symbol, uint _initialSupply, uint _decimals) public {
+    // Cannot create a token without supply
+    require(_initialSupply != 0);
 
-	function setTransferAgent(address addr, bool state) onlyOwner inReleaseState(false) public {
-  		transferAgents[addr] = state;
-	}
+    owner = msg.sender;
 
-	function releaseTokenTransfer() public onlyReleaseAgent {
-    	released = true;
-	}
+    name = _name;
+    symbol = _symbol;
 
-	// @dev Override standardToken function
-	function transfer(
-			address _to, 
-			uint _value) 
-			canTransfer(msg.sender) public returns (bool success) {
-		return super.transfer(_to, _value);
-	}
+    totalSupply = _initialSupply;
 
-	// @dev Override standardToken function
-	function transferFrom(
-			address _from, 
-			address _to, 
-			uint _value) 
-			canTransfer(_from) public returns (bool success) {
-    	return super.transferFrom(
-	    		_from, 
-	    		_to, 
-	    		_value);
-	}
+    decimals = _decimals;
+
+    // Create initially all balance on owner
+    balances[owner] = totalSupply;
+  }
+
+  /**
+   * To update token information at the end.
+   *
+   */
+  function setTokenInformation(string _name, string _symbol) onlyOwner public {
+    name = _name;
+    symbol = _symbol;
+
+    UpdatedTokenInformation(name, symbol);
+  }
+
+  function transfer(address _to, uint _value) public returns (bool success) {
+    // Call StandardToken.transfer()
+    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
+    if (released || transferAgents[msg.sender]) {
+      return super.transfer(_to, _value);
+    } else {
+      return false;
+    }
+  }
+
+  function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
+    // Call StandardToken.transferForm()
+    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
+    if (released || transferAgents[msg.sender]) {
+      return super.transferFrom(_from, _to, _value);
+    } else {
+      return false;
+    }
+  }
 }
