@@ -21,6 +21,18 @@ contract ReleasableToken is ERC20, Ownable {
   /** A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.*/
   bool public released = false;
 
+  /* An array of vesting timelocks, the entries of which are physical time in seconds */
+  uint256[] public timelocks;
+
+  /* An array of vesting milestones, the entries of which determine the maximum amount of tokens allowed to be transferred */
+  uint256[] public milestones;
+
+  /* The base point of which the time vesting is counted from */
+  uint256 public basePoint;
+
+  /* An indicator to determine which milestone the token is at */
+  uint256 public currentState;
+
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
   mapping (address => bool) public transferAgents;
 
@@ -33,7 +45,26 @@ contract ReleasableToken is ERC20, Ownable {
   modifier canTransfer(address _sender) {
     CanTransferChecked(released || transferAgents[_sender], _sender, transferAgents[_sender], released);
     if (released || transferAgents[_sender]) {revert();}
+
+    // udpate to latest state
+    while (basePoint + timelocks[currentState] < now && currentState < timelocks.length) {
+      currentState++;
+    }
+
+    require(msg.value <= milestones[currentState]);
+
     _;
+  }
+
+  function setMilestones(
+    uint256 _basePoint,
+    uint256[] _milestones,
+    uint256[] _timelocks
+  ) public {
+    require(_milestones.length == _timelocks.length);
+    basePoint = _basePoint;
+    milestones = _milestones;
+    timelocks = _timelocks;
   }
 
   /**

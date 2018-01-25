@@ -30,12 +30,6 @@ contract VelixIdTokenCrowdsale {
   // amount of raised money in wei
   uint256 public weiRaised;
 
-  // array of timelocks
-  uint256[] public milestones;
-
-  // decide if the contract is timelock contract
-  bool isTimelockContract = false;
-
   /**
    * event for token purchase logging
    * @param purchaser who paid for the tokens
@@ -58,85 +52,33 @@ contract VelixIdTokenCrowdsale {
     wallet = _wallet;
   }
 
-  // creates the token to be sold.
-  // override this method to have crowdsale of a specific mintable token.
-  // function createTokenContract() internal returns (VelixIDToken) {
-  //   return new VelixIDToken("VelixID Token", "VXD");
-  // }
-
   // fallback function can be used to buy tokens
   function () external payable {
     // buyTokens(msg.sender);
   }
 
-  // low level token purchase function
-  // function buyTokens(address beneficiary) public payable {
-  //   require(beneficiary != 0x0);
-  //   require(validPeriod());
-
-  //   uint256 weiAmount = msg.value;
-
-  //   // calculate token amount to be created
-  //   uint256 tokens = weiAmount.mul(rate);
-
-  //   // update state
-  //   weiRaised = weiRaised.add(weiAmount);
-
-  //   token.mint(beneficiary, tokens);
-  //   TokenPurchase(msg.sender, beneficiary, tokens);
-
-  //   forwardFunds(tokens);
-  // }
-
-  // low level token purchase function
-  // function allocateTokens(address beneficiary) public payable {
-  //   require(beneficiary != address(0));
-  //   require(validNonZeroPurchase());
-
-  //   uint256 weiAmount = msg.value;
-
-  //   // calculate token amount to be created
-  //   uint256 tokens = weiAmount.mul(rate);
-
-  //   // update state
-  //   weiRaised = weiRaised.add(weiAmount);
-
-  //   token.mint(beneficiary, tokens);
-  //   TokenPurchase(msg.sender, beneficiary, tokens);
-
-  //   forwardFunds(tokens);
-  // }
-
   // @dev transfer after release should not be made with an amount greater allowed
   // @param the address to transfer to
   // @param tokens the total amount of tokens to transfer to
-  // @param tokensInMlestone1 the amount of tokens to transfer to at the 1st milestone
-  // @param tokensInMlestone2 the amount of tokens to transfer to at the 1st milestone
-  // @param tokensInMlestone3 the amount of tokens to transfer to at the 1st milestone
-  // @param tokensInMlestone4 the amount of tokens to transfer to at the 1st milestone
-  // @param tokensInMlestone5 the amount of tokens to transfer to at the 1st milestone
-  // @param tokensInMlestone6 the amount of tokens to transfer to at the 1st milestone
+  // @param milestones the milestones set for each vesting period
+  // @param timelocks an array of vesting timelocks, the entries of which are physical time in seconds
   function transferTokensWithTimelock(
     address to,
     uint256 tokens,
-    uint256 tokensInMlestone1,
-    uint256 tokensInMlestone2,
-    uint256 tokensInMlestone3,
-    uint256 tokensInMlestone4,
-    uint256 tokensInMlestone5,
-    uint256 tokensInMlestone6) public payable returns (VelixIDToken){
+    uint256[] milestones,
+    uint256[] timelocks
+    ) public payable returns (VelixIDToken){
     
     require(to != address(0));
-    require(validNonZeroPurchase());
-    require(tokens >= (tokensInMlestone1+tokensInMlestone2+tokensInMlestone3+tokensInMlestone4+tokensInMlestone5+tokensInMlestone6));
-    isTimelockContract = true;
-    milestones[0] = tokensInMlestone1;
-    milestones[1] = tokensInMlestone2;
-    milestones[2] = tokensInMlestone3;
-    milestones[3] = tokensInMlestone4;
-    milestones[4] = tokensInMlestone5;
-    milestones[5] = tokensInMlestone6;
+    
     token = new VelixIDToken("VelixID Token", "VXD", tokens, 20);
+
+    token.setMilestones(
+      now, 
+      milestones, 
+      timelocks
+    );
+
     return token;
   }
 
@@ -168,7 +110,4 @@ contract VelixIdTokenCrowdsale {
     return now > endTime;
   }
 
-  function validTimelockContract() internal view returns (bool) {
-    return isTimelockContract;
-  }
 }
