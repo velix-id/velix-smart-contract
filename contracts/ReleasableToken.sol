@@ -8,12 +8,13 @@ pragma solidity ^0.4.18;
 
 import "./Ownable.sol";
 import "./ERC20.sol";
+import "./StandardToken.sol";
 
 
 /**
  * Define interface for releasing the token transfer after a successful crowdsale.
  */
-contract ReleasableToken is ERC20, Ownable {
+contract ReleasableToken is ERC20, Ownable, StandardToken {
 
   /* The finalizer contract that allows unlift the transfer limits on this token */
   address public releaseAgent;
@@ -24,7 +25,7 @@ contract ReleasableToken is ERC20, Ownable {
   /* An array of vesting timelocks, the entries of which are physical time in seconds */
   uint256[] public timelocks;
 
-  /* An array of vesting milestones, the entries of which determine the maximum amount of tokens allowed to be transferred */
+  /* An array of vesting milestones, the entries of which determine the percentage of tokens locked during vesting period */
   uint256[] public milestones;
 
   /* The base point of which the time vesting is counted from */
@@ -51,11 +52,14 @@ contract ReleasableToken is ERC20, Ownable {
       currentState++;
     }
 
-    require(msg.value <= milestones[currentState]);
+    uint256 bal = balances[msg.sender];
 
+    // the percentage of transaction should not exceed the available balances
+    require(((bal - msg.value)/bal) >= milestones[currentState]);
     _;
   }
 
+  // @dev set the milestones array for token
   function setMilestones(
     uint256 _basePoint,
     uint256[] _milestones,
@@ -65,6 +69,11 @@ contract ReleasableToken is ERC20, Ownable {
     basePoint = _basePoint;
     milestones = _milestones;
     timelocks = _timelocks;
+  }
+
+  // @dev get current state of the milestone
+  function getCurrentMilestone() public returns (uint256 _currentState) {
+    return currentState;
   }
 
   /**
