@@ -25,22 +25,23 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     /* An array of vesting milestones, the entries of which determine the amount of tokens locked during vesting period */
     uint256[] milestones;
 
-    /* An array of vesting timelocks, the entries of which are physical time in seconds */
-    uint256[] timelocks;
-
     /* An indicator to determine which milestone the token is at */
     uint256 currentState;
   }
 
+  /* An array of vesting timelocks, the entries of which are physical time in seconds */
+  uint256[7] timelocks = [7776000, 15552000, 23328000, 31104000, 38880000, 46656000, 54432000];
+
   /* The finalizer contract that allows unlift the transfer limits on this token */
   address public releaseAgent;
 
-  /** A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.*/
+  /* A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.*/
   bool public released = false;
 
-  /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
+  /* Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
   mapping (address => bool) public transferAgents;
 
+  /* Map of Vesting clauses that are corresponding to each address */
   mapping (address => Vesting) internal vestings;
 
   event CanTransferChecked(bool canTransfer, address indexed from, bool isTransferAgent, bool isReleased);
@@ -54,7 +55,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     if (released || transferAgents[_sender]) {revert();}
 
     // udpate to latest state
-    while (vestings[_sender].basePoint + vestings[_sender].timelocks[vestings[_sender].currentState] < now && vestings[_sender].currentState < vestings[_sender].timelocks.length) {
+    while (vestings[_sender].basePoint + timelocks[vestings[_sender].currentState] < now && vestings[_sender].currentState < timelocks.length) {
       vestings[_sender].currentState++;
     }
 
@@ -69,11 +70,10 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
   function setMilestones(
     address _vestingAddr,
     uint256 _basePoint,
-    uint256[] _milestones,
-    uint256[] _timelocks
+    uint256[] _milestones
   ) public {
-    require(_milestones.length == _timelocks.length);
-    vestings[_vestingAddr] = Vesting(_basePoint, _milestones, _timelocks, 0);
+    require(_milestones.length == timelocks.length);
+    vestings[_vestingAddr] = Vesting(_basePoint, _milestones, 0);
   }
 
   // @dev get current state of the milestone
