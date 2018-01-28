@@ -7,6 +7,7 @@
 pragma solidity ^0.4.18;
 
 import "./Ownable.sol";
+import './BurnableToken.sol';
 import "./ERC20.sol";
 import "./StandardToken.sol";
 
@@ -14,7 +15,7 @@ import "./StandardToken.sol";
 /**
  * Define interface for releasing the token transfer after a successful crowdsale.
  */
-contract ReleasableToken is ERC20, Ownable, StandardToken {
+contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
 
   /* The finalizer contract that allows unlift the transfer limits on this token */
   address public releaseAgent;
@@ -25,7 +26,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken {
   /* An array of vesting timelocks, the entries of which are physical time in seconds */
   uint256[] public timelocks;
 
-  /* An array of vesting milestones, the entries of which determine the percentage of tokens locked during vesting period */
+  /* An array of vesting milestones, the entries of which determine the amount of tokens locked during vesting period */
   uint256[] public milestones;
 
   /* The base point of which the time vesting is counted from */
@@ -54,8 +55,8 @@ contract ReleasableToken is ERC20, Ownable, StandardToken {
 
     uint256 bal = balances[msg.sender];
 
-    // the percentage of transaction should not exceed the available balances
-    require(((bal - msg.value)/bal) >= milestones[currentState]);
+    // the balance of wallet after the transaction should not be lower than locked balance
+    require((bal - msg.value) >= milestones[currentState]);
     _;
   }
 
@@ -72,7 +73,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken {
   }
 
   // @dev get current state of the milestone
-  function getCurrentMilestone() public returns (uint256 _currentState) {
+  function getCurrentMilestone() public view returns (uint256) {
     return currentState;
   }
 

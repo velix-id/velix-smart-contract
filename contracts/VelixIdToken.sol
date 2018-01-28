@@ -13,7 +13,6 @@
 
 pragma solidity ^0.4.18;
 
-import './BurnableToken.sol';
 import "./ReleasableToken.sol";
 import './SafeMath.sol';
 
@@ -25,7 +24,7 @@ import './SafeMath.sol';
  * for Velix.ID
  *
  */
-contract VelixIDToken is ReleasableToken, BurnableToken {
+contract VelixIDToken is ReleasableToken {
 // contract VelixIDToken is ReleasableToken {
 
   using SafeMath for uint256;
