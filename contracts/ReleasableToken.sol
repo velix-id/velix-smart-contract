@@ -18,14 +18,15 @@ import "./StandardToken.sol";
 contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
 
   struct Vesting {
-    /* An array of vesting timelocks, the entries of which are physical time in seconds */
-    uint256[] timelocks;
+
+    /* The base point of which the time vesting is counted from */
+    uint256 basePoint;
 
     /* An array of vesting milestones, the entries of which determine the amount of tokens locked during vesting period */
     uint256[] milestones;
 
-    /* The base point of which the time vesting is counted from */
-    uint256 basePoint;
+    /* An array of vesting timelocks, the entries of which are physical time in seconds */
+    uint256[] timelocks;
 
     /* An indicator to determine which milestone the token is at */
     uint256 currentState;
@@ -72,9 +73,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     uint256[] _timelocks
   ) public {
     require(_milestones.length == _timelocks.length);
-    vestings[_vestingAddr].basePoint = _basePoint;
-    vestings[_vestingAddr].milestones = _milestones;
-    vestings[_vestingAddr].timelocks = _timelocks;
+    vestings[_vestingAddr] = Vesting(_basePoint, _milestones, _timelocks, 0);
   }
 
   // @dev get current state of the milestone
