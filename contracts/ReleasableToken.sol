@@ -30,7 +30,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
   }
 
   /* An array of vesting timelocks, the entries of which are physical time in seconds */
-  uint256[7] timelocks = [7776000, 15552000, 23328000, 31104000, 38880000, 46656000, 54432000];
+  uint256[8] timelocks = [7776000, 15552000, 23328000, 31104000, 38880000, 46656000, 54432000, 62208000];
 
   /* The finalizer contract that allows unlift the transfer limits on this token */
   address public releaseAgent;
@@ -54,15 +54,13 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     CanTransferChecked(released || transferAgents[_sender], _sender, transferAgents[_sender], released);
     if (released || transferAgents[_sender]) {revert();}
 
-    // udpate to latest state
-    while (vestings[_sender].basePoint + timelocks[vestings[_sender].currentState] < now && vestings[_sender].currentState < timelocks.length) {
-      vestings[_sender].currentState++;
-    }
-
     uint256 bal = balances[msg.sender];
 
-    // the balance of wallet after the transaction should not be lower than locked balance
-    require((bal - _value) >= vestings[_sender].milestones[vestings[_sender].currentState]);
+    if(versting[_sender]) {
+      // the balance of wallet after the transaction should not be lower than locked balance
+      require((bal - _value) >= getCurrentMilestone(_sender));
+    }
+
     _;
   }
 
@@ -70,14 +68,26 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
   function setMilestones(
     address _vestingAddr,
     uint256 _basePoint,
-    uint256[] _milestones
+    uint256 _m1,
+    uint256 _m2,
+    uint256 _m3,
+    uint256 _m4,
+    uint256 _m5,
+    uint256 _m6,
+    uint256 _m7,
+    uint256 _m8
   ) public {
-    require(_milestones.length == timelocks.length);
+    uint256[8] _milestones = [_m1, _m2, _m3, _m4, _m5, _m6, _m7, _m8];
+    isVesting = true;
     vestings[_vestingAddr] = Vesting(_basePoint, _milestones, 0);
   }
 
   // @dev get current state of the milestone
   function getCurrentMilestone(address _address) public view returns (uint256) {
+    // udpate to latest state
+    while (vestings[_address].basePoint + timelocks[vestings[_address].currentState] < now && vestings[_address].currentState < timelocks.length) {
+      vestings[_address].currentState++;
+    }
     return vestings[_address].milestones[vestings[_address].currentState];
   }
 
