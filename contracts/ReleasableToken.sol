@@ -44,7 +44,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
    * Limit token transfer until the crowdsale is over.
    *
    */
-  modifier canTransfer(address _sender) {
+  modifier canTransfer(address _sender, uint256 _value) {
     CanTransferChecked(released || transferAgents[_sender], _sender, transferAgents[_sender], released);
     if (released || transferAgents[_sender]) {revert();}
 
@@ -56,7 +56,7 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     uint256 bal = balances[msg.sender];
 
     // the balance of wallet after the transaction should not be lower than locked balance
-    require((bal - msg.value) >= milestones[currentState]);
+    require((bal - _value) >= milestones[currentState]);
     _;
   }
 
