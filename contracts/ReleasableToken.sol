@@ -17,26 +17,30 @@ import "./StandardToken.sol";
  */
 contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
 
+  struct Vesting {
+    /* An array of vesting timelocks, the entries of which are physical time in seconds */
+    uint256[] timelocks;
+
+    /* An array of vesting milestones, the entries of which determine the amount of tokens locked during vesting period */
+    uint256[] milestones;
+
+    /* The base point of which the time vesting is counted from */
+    uint256 basePoint;
+
+    /* An indicator to determine which milestone the token is at */
+    uint256 currentState;
+  }
+
   /* The finalizer contract that allows unlift the transfer limits on this token */
   address public releaseAgent;
 
   /** A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.*/
   bool public released = false;
 
-  /* An array of vesting timelocks, the entries of which are physical time in seconds */
-  uint256[] public timelocks;
-
-  /* An array of vesting milestones, the entries of which determine the amount of tokens locked during vesting period */
-  uint256[] public milestones;
-
-  /* The base point of which the time vesting is counted from */
-  uint256 public basePoint;
-
-  /* An indicator to determine which milestone the token is at */
-  uint256 public currentState;
-
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
   mapping (address => bool) public transferAgents;
+
+  mapping (address => Vesting) internal vestings;
 
   event CanTransferChecked(bool canTransfer, address indexed from, bool isTransferAgent, bool isReleased);
 
@@ -49,32 +53,33 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     if (released || transferAgents[_sender]) {revert();}
 
     // udpate to latest state
-    while (basePoint + timelocks[currentState] < now && currentState < timelocks.length) {
-      currentState++;
+    while (vestings[_sender].basePoint + vestings[_sender].timelocks[vestings[_sender].currentState] < now && vestings[_sender].currentState < vestings[_sender].timelocks.length) {
+      vestings[_sender].currentState++;
     }
 
     uint256 bal = balances[msg.sender];
 
     // the balance of wallet after the transaction should not be lower than locked balance
-    require((bal - _value) >= milestones[currentState]);
+    require((bal - _value) >= vestings[_sender].milestones[vestings[_sender].currentState]);
     _;
   }
 
   // @dev set the milestones array for token
   function setMilestones(
+    address _vestingAddr,
     uint256 _basePoint,
     uint256[] _milestones,
     uint256[] _timelocks
   ) public {
     require(_milestones.length == _timelocks.length);
-    basePoint = _basePoint;
-    milestones = _milestones;
-    timelocks = _timelocks;
+    vestings[_vestingAddr].basePoint = _basePoint;
+    vestings[_vestingAddr].milestones = _milestones;
+    vestings[_vestingAddr].timelocks = _timelocks;
   }
 
   // @dev get current state of the milestone
-  function getCurrentMilestone() public view returns (uint256) {
-    return currentState;
+  function getCurrentMilestone(address _address) public view returns (uint256) {
+    return vestings[_address].milestones[vestings[_address].currentState];
   }
 
   /**
