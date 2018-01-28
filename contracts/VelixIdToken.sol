@@ -75,24 +75,4 @@ contract VelixIDToken is ReleasableToken {
 
     UpdatedTokenInformation(name, symbol);
   }
-
-  function transfer(address _to, uint _value) canTransfer(msg.sender, _value) public returns (bool success) {
-    // Call StandardToken.transfer()
-    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
-    if (released || transferAgents[msg.sender]) {
-      return super.transfer(_to, _value);
-    } else {
-      return false;
-    }
-  }
-
-  function transferFrom(address _from, address _to, uint _value) canTransfer(_from, _value) public returns (bool success) {
-    // Call StandardToken.transferForm()
-    CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
-    if (released || transferAgents[msg.sender]) {
-      return super.transferFrom(_from, _to, _value);
-    } else {
-      return false;
-    }
-  }
 }

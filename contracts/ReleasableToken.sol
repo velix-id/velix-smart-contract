@@ -116,17 +116,15 @@ contract ReleasableToken is ERC20, Ownable, StandardToken, BurnableToken {
     _;
   }
 
-  function transfer(address _to, uint _value) public returns (bool success) {
+  function transfer(address _to, uint _value) canTransfer(msg.sender, _value) public returns (bool success) {
     // Call StandardToken.transfer()
     CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
-    if (released || transferAgents[msg.sender]) {revert();}
-   return super.transfer(_to, _value);
+    return super.transfer(_to, _value);
   }
 
-  function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
+  function transferFrom(address _from, address _to, uint _value) canTransfer(_from, _value) public returns (bool success) {
     // Call StandardToken.transferForm()
     CanTransferChecked(released || transferAgents[msg.sender], msg.sender, transferAgents[msg.sender], released);
-    if (released || transferAgents[msg.sender]) {revert();}
     return super.transferFrom(_from, _to, _value);
   }
 
